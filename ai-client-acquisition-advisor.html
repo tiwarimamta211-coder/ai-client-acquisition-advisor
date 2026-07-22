@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Client Acquisition Advisor | IncomeAIHub</title>
+<meta name="description" content="AI-powered client acquisition strategy generator for freelancers, CA firms & MSMEs. Personalized outreach templates, channel ranking & 30-day action plan.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+<style>
+:root{
+  --gold:#D4AF37;
+  --gold-soft:#f0d78c;
+  --emerald:#10b981;
+  --violet:#8b5cf6;
+  --bg:#08090c;
+  --bg-1:#0d0f14;
+  --card:#12141b;
+  --card-2:#171a23;
+  --border:#22252f;
+  --text:#eef0f4;
+  --text-dim:#9aa0ad;
+  --text-faint:#5c6272;
+  --danger:#f87171;
+  --radius:16px;
+  --font-display:'Syne',sans-serif;
+  --font-body:'DM Sans',sans-serif;
+  --font-mono:'DM Mono',monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{
+  font-family:var(--font-body);
+  background:
+    radial-gradient(circle at 15% 0%, rgba(212,175,55,0.08), transparent 40%),
+    radial-gradient(circle at 85% 20%, rgba(139,92,246,0.08), transparent 40%),
+    radial-gradient(circle at 50% 100%, rgba(16,185,129,0.06), transparent 40%),
+    var(--bg);
+  color:var(--text);
+  min-height:100vh;
+  line-height:1.6;
+}
+.container{max-width:960px;margin:0 auto;padding:0 20px;}
+a{color:inherit;}
+img{max-width:100%;}
+
+/* ---------- HEADER ---------- */
+header.site{
+  position:sticky;top:0;z-index:50;
+  background:rgba(8,9,12,0.85);
+  backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--border);
+}
+.nav{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 20px;max-width:960px;margin:0 auto;
+}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--font-display);font-weight:800;font-size:18px;letter-spacing:0.3px;}
+.brand .dot{width:9px;height:9px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--emerald));box-shadow:0 0 12px var(--gold);}
+.brand small{display:block;font-family:var(--font-mono);font-size:10px;color:var(--text-faint);font-weight:400;letter-spacing:1px;}
+.nav-actions{display:flex;gap:10px;align-items:center;}
+.btn-guide{
+  font-family:var(--font-body);font-size:13px;font-weight:600;
+  color:var(--gold-soft);background:rgba(212,175,55,0.08);
+  border:1px solid rgba(212,175,55,0.35);padding:8px 14px;border-radius:100px;
+  cursor:pointer;transition:.2s;
+}
+.btn-guide:hover{background:rgba(212,175,55,0.16);}
+.unlock-badge{
+  font-family:var(--font-mono);font-size:11px;padding:6px 12px;border-radius:100px;
+  border:1px solid rgba(16,185,129,0.4);color:var(--emerald);background:rgba(16,185,129,0.08);
+  display:none;align-items:center;gap:6px;
+}
+.unlock-badge.show{display:inline-flex;}
+
+/* ---------- HERO ---------- */
+.hero{padding:56px 0 32px;text-align:center;}
+.eyebrow{
+  display:inline-flex;align-items:center;gap:8px;
+  font-family:var(--font-mono);font-size:12px;color:var(--violet);
+  border:1px solid rgba(139,92,246,0.35);background:rgba(139,92,246,0.08);
+  padding:6px 14px;border-radius:100px;margin-bottom:22px;
+}
+h1{
+  font-family:var(--font-display);font-weight:800;
+  font-size:clamp(30px,5vw,48px);line-height:1.12;letter-spacing:-0.5px;
+  background:linear-gradient(135deg,#fff 30%,var(--gold-soft) 100%);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.hero p.sub{
+  max-width:620px;margin:18px auto 0;color:var(--text-dim);font-size:16px;
+}
+.hero-stats{display:flex;gap:28px;justify-content:center;margin-top:32px;flex-wrap:wrap;}
+.hstat{text-align:center;}
+.hstat b{display:block;font-family:var(--font-display);font-size:22px;color:var(--gold-soft);}
+.hstat span{font-size:12px;color:var(--text-faint);}
+
+/* ---------- AD SLOTS ---------- */
+.ad-slot{
+  max-width:960px;margin:24px auto;padding:14px;
+  border:1px dashed var(--border);border-radius:12px;
+  text-align:center;color:var(--text-faint);font-family:var(--font-mono);font-size:11px;
+  min-height:90px;display:flex;align-items:center;justify-content:center;
+}
+
+/* ---------- CARD / FORM ---------- */
+.panel{
+  background:linear-gradient(180deg,var(--card),var(--card-2));
+  border:1px solid var(--border);border-radius:var(--radius);
+  padding:28px;margin:24px auto;max-width:760px;
+  box-shadow:0 20px 60px -30px rgba(0,0,0,0.6);
+}
+.progress-wrap{margin-bottom:26px;}
+.progress-top{display:flex;justify-content:space-between;font-family:var(--font-mono);font-size:12px;color:var(--text-faint);margin-bottom:8px;}
+.progress-bar{height:6px;background:var(--card-2);border-radius:100px;overflow:hidden;border:1px solid var(--border);}
+.progress-fill{height:100%;width:11%;background:linear-gradient(90deg,var(--gold),var(--emerald));transition:width .35s ease;border-radius:100px;}
+
+.step{display:none;animation:fadeIn .35s ease;}
+.step.active{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+
+.q-label{font-family:var(--font-display);font-size:19px;font-weight:700;margin-bottom:6px;}
+.q-hint{font-size:13px;color:var(--text-faint);margin-bottom:18px;}
+
+.opt-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+@media(max-width:520px){.opt-grid{grid-template-columns:1fr;}}
+.opt{
+  border:1px solid var(--border);background:var(--bg-1);border-radius:12px;
+  padding:14px 16px;cursor:pointer;transition:.15s;font-size:14px;font-weight:500;
+  display:flex;align-items:center;gap:10px;
+}
+.opt:hover{border-color:rgba(212,175,55,0.4);}
+.opt.selected{border-color:var(--gold);background:rgba(212,175,55,0.08);color:var(--gold-soft);}
+.opt .check{
+  width:16px;height:16px;border-radius:5px;border:1.5px solid var(--text-faint);
+  flex:0 0 auto;display:flex;align-items:center;justify-content:center;font-size:11px;
+}
+.opt.selected .check{border-color:var(--gold);background:var(--gold);color:#08090c;}
+
+input[type=text],input[type=number],select,textarea{
+  width:100%;padding:13px 14px;border-radius:10px;border:1px solid var(--border);
+  background:var(--bg-1);color:var(--text);font-family:var(--font-body);font-size:14px;
+  outline:none;transition:.15s;
+}
+input:focus,select:focus,textarea:focus{border-color:var(--gold);}
+textarea{resize:vertical;min-height:80px;}
+
+.step-nav{display:flex;justify-content:space-between;align-items:center;margin-top:26px;gap:12px;}
+.btn{
+  font-family:var(--font-body);font-weight:700;font-size:14px;padding:13px 22px;
+  border-radius:10px;border:none;cursor:pointer;transition:.2s;
+}
+.btn-primary{background:linear-gradient(135deg,var(--gold),#b8912c);color:#0a0a0a;box-shadow:0 8px 24px -8px rgba(212,175,55,0.5);}
+.btn-primary:hover{filter:brightness(1.08);transform:translateY(-1px);}
+.btn-primary:disabled{opacity:.4;cursor:not-allowed;transform:none;}
+.btn-ghost{background:transparent;border:1px solid var(--border);color:var(--text-dim);}
+.btn-ghost:hover{border-color:var(--text-dim);}
+.btn-block{width:100%;}
+
+/* ---------- LOADING ---------- */
+.loading-wrap{display:none;text-align:center;padding:60px 20px;}
+.loading-wrap.active{display:block;}
+.spinner{
+  width:56px;height:56px;margin:0 auto 22px;border-radius:50%;
+  border:3px solid var(--border);border-top-color:var(--gold);
+  animation:spin 0.9s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg);}}
+.loading-msg{font-family:var(--font-mono);font-size:13px;color:var(--text-dim);}
+
+/* ---------- RESULTS ---------- */
+.results-wrap{display:none;}
+.results-wrap.active{display:block;}
+.score-card{
+  background:linear-gradient(180deg,var(--card),var(--card-2));
+  border:1px solid var(--border);border-radius:var(--radius);
+  padding:32px;text-align:center;max-width:760px;margin:24px auto;
+}
+.gauge-label{font-family:var(--font-mono);font-size:12px;color:var(--text-faint);letter-spacing:1px;text-transform:uppercase;margin-top:6px;}
+.gauge-title{font-family:var(--font-display);font-weight:800;font-size:22px;margin-bottom:14px;}
+#gaugeScoreText{font-family:var(--font-display);font-weight:800;}
+.gauge-verdict{font-size:15px;color:var(--gold-soft);margin-top:10px;font-weight:600;}
+
+.section-title{
+  font-family:var(--font-display);font-weight:700;font-size:20px;
+  margin:34px auto 14px;max-width:760px;display:flex;align-items:center;gap:10px;
+}
+.section-title .tag{
+  font-family:var(--font-mono);font-size:10px;padding:3px 9px;border-radius:100px;
+  background:rgba(139,92,246,0.12);color:var(--violet);border:1px solid rgba(139,92,246,0.3);
+}
+
+.channel-card{
+  background:var(--card);border:1px solid var(--border);border-radius:14px;
+  padding:20px;max-width:760px;margin:12px auto;display:flex;gap:16px;align-items:flex-start;
+}
+.channel-rank{
+  font-family:var(--font-display);font-weight:800;font-size:22px;color:var(--gold);
+  flex:0 0 auto;width:36px;
+}
+.channel-body h4{font-size:16px;margin-bottom:6px;}
+.channel-body p{font-size:13.5px;color:var(--text-dim);}
+
+.template-card{
+  background:var(--card);border:1px solid var(--border);border-radius:14px;
+  padding:20px;max-width:760px;margin:12px auto;position:relative;
+}
+.template-card h4{font-size:14px;color:var(--emerald);margin-bottom:10px;font-family:var(--font-mono);text-transform:uppercase;letter-spacing:0.5px;}
+.template-body{
+  font-family:var(--font-body);font-size:14px;white-space:pre-wrap;color:var(--text);
+  background:var(--bg-1);border-radius:10px;padding:14px;border:1px solid var(--border);
+}
+.copy-btn{
+  position:absolute;top:16px;right:16px;font-family:var(--font-mono);font-size:11px;
+  background:var(--card-2);border:1px solid var(--border);color:var(--text-dim);
+  padding:6px 10px;border-radius:8px;cursor:pointer;
+}
+.copy-btn:hover{border-color:var(--gold);color:var(--gold-soft);}
+
+.plan-week{
+  background:var(--card);border:1px solid var(--border);border-radius:14px;
+  padding:18px 20px;max-width:760px;margin:10px auto;
+}
+.plan-week h4{font-family:var(--font-mono);font-size:12px;color:var(--gold-soft);margin-bottom:8px;text-transform:uppercase;letter-spacing:1px;}
+.plan-week p{font-size:14px;color:var(--text-dim);}
+
+.blur-lock{
+  position:relative;max-width:760px;margin:12px auto;border-radius:14px;overflow:hidden;
+}
+.blur-lock .blurred{filter:blur(7px);pointer-events:none;user-select:none;}
+.lock-overlay{
+  position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  background:rgba(8,9,12,0.55);gap:10px;text-align:center;padding:20px;
+}
+.lock-icon{font-size:28px;}
+.lock-overlay p{font-size:13px;color:var(--text-dim);max-width:280px;}
+
+/* ---------- PAYWALL ---------- */
+.paywall{
+  max-width:760px;margin:36px auto;padding:30px;border-radius:var(--radius);
+  background:linear-gradient(135deg,rgba(212,175,55,0.1),rgba(139,92,246,0.06));
+  border:1px solid rgba(212,175,55,0.35);text-align:center;
+}
+.paywall .price{font-family:var(--font-display);font-weight:800;font-size:38px;color:var(--gold-soft);}
+.paywall .price span{font-size:16px;color:var(--text-faint);font-weight:500;}
+.paywall ul{list-style:none;margin:18px 0;text-align:left;max-width:360px;margin-left:auto;margin-right:auto;}
+.paywall li{font-size:13.5px;color:var(--text-dim);padding:6px 0;display:flex;gap:8px;}
+.paywall li::before{content:"✓";color:var(--emerald);font-weight:700;}
+
+/* ---------- MODAL ---------- */
+.modal-overlay{
+  display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:100;
+  align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px);
+}
+.modal-overlay.active{display:flex;}
+.modal-box{
+  background:var(--card);border:1px solid var(--border);border-radius:16px;
+  max-width:520px;width:100%;max-height:80vh;overflow-y:auto;padding:26px;position:relative;
+}
+.modal-close{position:absolute;top:16px;right:16px;background:none;border:none;color:var(--text-dim);font-size:20px;cursor:pointer;}
+.modal-box h2{font-family:var(--font-display);font-size:20px;margin-bottom:16px;}
+.modal-box h3{font-size:15px;color:var(--gold-soft);margin:16px 0 6px;}
+.modal-box p, .modal-box li{font-size:14px;color:var(--text-dim);line-height:1.7;}
+.modal-box ol,.modal-box ul{padding-left:20px;margin-bottom:8px;}
+
+/* ---------- FOOTER ---------- */
+footer{
+  margin-top:60px;padding:32px 20px;border-top:1px solid var(--border);
+  text-align:center;color:var(--text-faint);font-size:12.5px;font-family:var(--font-mono);
+}
+footer a{color:var(--gold-soft);text-decoration:none;}
+
+.toast{
+  position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);
+  background:var(--card-2);border:1px solid var(--border);padding:12px 20px;border-radius:10px;
+  font-size:13px;opacity:0;transition:.3s;z-index:200;pointer-events:none;
+}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+</style>
+</head>
+<body>
+
+<header class="site">
+  <div class="nav">
+    <div class="brand">
+      <span class="dot"></span>
+      <div>IncomeAIHub<small>AI CLIENT ACQUISITION ADVISOR</small></div>
+    </div>
+    <div class="nav-actions">
+      <span class="unlock-badge" id="unlockBadge">🔓 Lifetime Unlocked</span>
+      <button class="btn-guide" onclick="openGuide()">हिंदी गाइड</button>
+    </div>
+  </div>
+</header>
+
+<div class="container">
+  <section class="hero">
+    <div class="eyebrow">● AI-Powered Strategy Engine</div>
+    <h1>AI Client Acquisition Advisor</h1>
+    <p class="sub">Apni niche, experience aur goals ke hisaab se personalized client-acquisition strategy paayein — best outreach channels, ready-to-send templates aur 30-din ka action plan, Hinglish mein.</p>
+    <div class="hero-stats">
+      <div class="hstat"><b>8</b><span>Quick Questions</span></div>
+      <div class="hstat"><b>3</b><span>Ranked Channels</span></div>
+      <div class="hstat"><b>30-Day</b><span>Action Plan</span></div>
+    </div>
+  </section>
+</div>
+
+<div class="ad-slot">Advertisement Slot — 728x90 (AdSense)</div>
+
+<!-- ===================== FORM ===================== -->
+<div class="panel" id="formPanel">
+  <div class="progress-wrap">
+    <div class="progress-top"><span id="stepLabel">Step 1 of 8</span><span id="stepPercent">12%</span></div>
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+  </div>
+
+  <!-- Step 1: Niche -->
+  <div class="step active" data-step="1">
+    <div class="q-label">Aapka field / service kya hai?</div>
+    <div class="q-hint">Jo bhi aap freelance ya business mein offer karte hain</div>
+    <input type="text" id="q1" placeholder="e.g. GST filing, Web development, Content writing, Graphic design...">
+  </div>
+
+  <!-- Step 2: Experience -->
+  <div class="step" data-step="2">
+    <div class="q-label">Aapka experience level kya hai?</div>
+    <div class="q-hint">Ek option chunein</div>
+    <div class="opt-grid" id="q2">
+      <div class="opt" data-value="Beginner (0-1 saal)"><span class="check"></span>Beginner (0–1 साल)</div>
+      <div class="opt" data-value="Intermediate (1-3 saal)"><span class="check"></span>Intermediate (1–3 साल)</div>
+      <div class="opt" data-value="Experienced (3-6 saal)"><span class="check"></span>Experienced (3–6 साल)</div>
+      <div class="opt" data-value="Expert (6+ saal)"><span class="check"></span>Expert (6+ साल)</div>
+    </div>
+  </div>
+
+  <!-- Step 3: Current sources (multi) -->
+  <div class="step" data-step="3">
+    <div class="q-label">Abhi clients kahan se aa rahe hain?</div>
+    <div class="q-hint">Jitne apply hote hain sab select karein</div>
+    <div class="opt-grid" id="q3">
+      <div class="opt" data-value="Referrals"><span class="check"></span>Referrals / Word of mouth</div>
+      <div class="opt" data-value="Fiverr/Upwork"><span class="check"></span>Fiverr / Upwork</div>
+      <div class="opt" data-value="Cold outreach"><span class="check"></span>Cold Email / DM</div>
+      <div class="opt" data-value="Social media"><span class="check"></span>Social Media (LinkedIn/Insta)</div>
+      <div class="opt" data-value="Local networking"><span class="check"></span>Local networking</div>
+      <div class="opt" data-value="Koi source nahi"><span class="check"></span>Abhi koi consistent source nahi</div>
+    </div>
+  </div>
+
+  <!-- Step 4: Target client type -->
+  <div class="step" data-step="4">
+    <div class="q-label">Aap kis type ke clients target karna chahte hain?</div>
+    <div class="opt-grid" id="q4">
+      <div class="opt" data-value="Local businesses"><span class="check"></span>Local Businesses</div>
+      <div class="opt" data-value="CA firms / MSMEs"><span class="check"></span>CA Firms / MSMEs</div>
+      <div class="opt" data-value="Startups"><span class="check"></span>Startups</div>
+      <div class="opt" data-value="International clients"><span class="check"></span>International Clients</div>
+    </div>
+  </div>
+
+  <!-- Step 5: Monthly client goal -->
+  <div class="step" data-step="5">
+    <div class="q-label">Har mahine kitne naye clients chahiye?</div>
+    <input type="number" id="q5" placeholder="e.g. 3" min="1" max="100">
+  </div>
+
+  <!-- Step 6: Current pricing -->
+  <div class="step" data-step="6">
+    <div class="q-label">Aap currently average kitna charge karte hain (per project/ghanta)?</div>
+    <input type="text" id="q6" placeholder="e.g. ₹5000 per project ya ₹500/hour">
+  </div>
+
+  <!-- Step 7: Biggest challenge -->
+  <div class="step" data-step="7">
+    <div class="q-label">Sabse bada challenge kya hai?</div>
+    <div class="opt-grid" id="q7">
+      <div class="opt" data-value="Leads nahi milte"><span class="check"></span>Leads generate nahi ho pate</div>
+      <div class="opt" data-value="Deal close nahi hoti"><span class="check"></span>Baat close nahi hoti</div>
+      <div class="opt" data-value="Pricing/negotiation"><span class="check"></span>Pricing / Negotiation</div>
+      <div class="opt" data-value="Time ki kami"><span class="check"></span>Outreach ke liye time nahi</div>
+      <div class="opt" data-value="Visibility kam"><span class="check"></span>Online visibility kam hai</div>
+    </div>
+  </div>
+
+  <!-- Step 8: Preferred channels -->
+  <div class="step" data-step="8">
+    <div class="q-label">Kaunse channels try karne mein comfortable hain?</div>
+    <div class="q-hint">Multiple select kar sakte hain</div>
+    <div class="opt-grid" id="q8">
+      <div class="opt" data-value="Email"><span class="check"></span>Cold Email</div>
+      <div class="opt" data-value="LinkedIn"><span class="check"></span>LinkedIn</div>
+      <div class="opt" data-value="Fiverr/Upwork"><span class="check"></span>Fiverr/Upwork Bidding</div>
+      <div class="opt" data-value="WhatsApp"><span class="check"></span>WhatsApp Outreach</div>
+      <div class="opt" data-value="Local networking"><span class="check"></span>Local Networking/Events</div>
+      <div class="opt" data-value="Cold call"><span class="check"></span>Cold Calling</div>
+    </div>
+  </div>
+
+  <div class="step-nav">
+    <button class="btn btn-ghost" id="prevBtn" onclick="prevStep()" style="visibility:hidden;">Back</button>
+    <button class="btn btn-primary" id="nextBtn" onclick="nextStep()">Next →</button>
+  </div>
+</div>
+
+<!-- ===================== LOADING ===================== -->
+<div class="loading-wrap" id="loadingWrap">
+  <div class="spinner"></div>
+  <div class="loading-msg" id="loadingMsg">Aapki strategy analyze ho rahi hai...</div>
+</div>
+
+<!-- ===================== RESULTS ===================== -->
+<div class="results-wrap" id="resultsWrap">
+
+  <div class="score-card">
+    <div class="gauge-title">Client Acquisition Readiness Score</div>
+    <svg viewBox="0 0 200 120" width="240" style="max-width:100%;">
+      <path d="M20,110 A80,80 0 0,1 180,110" fill="none" stroke="#22252f" stroke-width="14" stroke-linecap="round"/>
+      <path id="gaugeArc" d="M20,110 A80,80 0 0,1 180,110" fill="none" stroke="url(#gaugeGrad)" stroke-width="14" stroke-linecap="round" stroke-dasharray="251.2" stroke-dashoffset="251.2"/>
+      <defs>
+        <linearGradient id="gaugeGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stop-color="#f87171"/>
+          <stop offset="50%" stop-color="#D4AF37"/>
+          <stop offset="100%" stop-color="#10b981"/>
+        </linearGradient>
+      </defs>
+      <text id="gaugeScoreText" x="100" y="95" text-anchor="middle" font-size="30" fill="#eef0f4">0</text>
+    </svg>
+    <div class="gauge-label">out of 100</div>
+    <div class="gauge-verdict" id="gaugeVerdict"></div>
+  </div>
+
+  <div class="section-title">🎯 Top Recommended Channels <span class="tag">Free Preview</span></div>
+  <div id="channelsFree"></div>
+
+  <div class="blur-lock" id="channelsLocked">
+    <div class="blurred" id="channelsBlurContent"></div>
+    <div class="lock-overlay">
+      <div class="lock-icon">🔒</div>
+      <p>Baaki channels + reasoning unlock karein ₹149 mein — lifetime access</p>
+    </div>
+  </div>
+
+  <div class="section-title">✉️ Ready-to-Send Outreach Templates <span class="tag">Locked</span></div>
+  <div class="blur-lock" id="templatesLocked">
+    <div class="blurred" id="templatesBlurContent"></div>
+    <div class="lock-overlay">
+      <div class="lock-icon">🔒</div>
+      <p>Personalized cold email, LinkedIn DM aur proposal opener — sirf unlock ke baad</p>
+    </div>
+  </div>
+
+  <div class="section-title">📅 30-Day Action Plan <span class="tag">Locked</span></div>
+  <div class="blur-lock" id="planLocked">
+    <div class="blurred" id="planBlurContent"></div>
+    <div class="lock-overlay">
+      <div class="lock-icon">🔒</div>
+      <p>Week-by-week action plan unlock karein</p>
+    </div>
+  </div>
+
+  <div id="fullContent" style="display:none;">
+    <div class="section-title">✉️ Ready-to-Send Outreach Templates</div>
+    <div id="templatesFull"></div>
+    <div class="section-title">📅 30-Day Action Plan</div>
+    <div id="planFull"></div>
+    <div class="section-title">💰 Pricing & Positioning Tip</div>
+    <div class="channel-card" style="display:block;" id="pricingTip"></div>
+  </div>
+
+  <div class="paywall" id="paywallBox">
+    <div class="eyebrow">Lifetime Unlock</div>
+    <div class="price">₹149<span>/ one-time</span></div>
+    <ul>
+      <li>Full ranked channel list with reasoning</li>
+      <li>3 personalized outreach templates (copy-paste ready)</li>
+      <li>Complete 30-day client acquisition action plan</li>
+      <li>Pricing & positioning guidance</li>
+      <li>Lifetime access — is device par dobara payment nahi</li>
+    </ul>
+    <button class="btn btn-primary btn-block" onclick="startPayment()" id="payBtn">🔓 Unlock Full Strategy — ₹149</button>
+  </div>
+
+  <div style="text-align:center;margin:20px;">
+    <button class="btn btn-ghost" onclick="restartTool()">↺ Naya Assessment Shuru Karein</button>
+  </div>
+</div>
+
+<div class="ad-slot">Advertisement Slot — 728x90 (AdSense)</div>
+
+<footer>
+  <p>Built by <a href="#" target="_blank">M.Dev</a> · Part of the <strong>IncomeAIHub</strong> suite · Raipur, Chhattisgarh</p>
+  <p style="margin-top:6px;">© 2026 IncomeAIHub. All rights reserved.</p>
+</footer>
+
+<!-- ===================== GUIDE MODAL ===================== -->
+<div class="modal-overlay" id="guideModal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeGuide()">✕</button>
+    <h2>📖 उपयोग गाइड (Hindi)</h2>
+    <h3>यह टूल क्या करता है?</h3>
+    <p>AI Client Acquisition Advisor आपकी niche, experience aur goals ke basis par ek personalized client-acquisition strategy banata hai — best channels, ready-made outreach templates, aur 30-din ka action plan.</p>
+    <h3>कैसे इस्तेमाल करें?</h3>
+    <ol>
+      <li>8 quick sawaalon ke jawab dein apne business ke baare mein</li>
+      <li>AI aapka "Client Acquisition Readiness Score" calculate karega</li>
+      <li>Free mein top channel preview dekhein</li>
+      <li>₹149 mein lifetime unlock karke full strategy, templates aur action plan paayein</li>
+      <li>Templates ko copy karke seedha email/LinkedIn/WhatsApp par use karein</li>
+    </ol>
+    <h3>Payment kaise hota hai?</h3>
+    <p>Razorpay ke through secure ₹149 one-time payment. Ek baar unlock karne ke baad is device par dobara payment nahi karna padega.</p>
+    <h3>Support</h3>
+    <p>Koi bhi issue ho to IncomeAIHub team se contact karein.</p>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ============================================================
+   CONFIG — Supabase backend (shared IncomeAIHub infrastructure)
+============================================================ */
+const SUPABASE_URL = "https://YOUR-PROJECT.supabase.co";
+const SUPABASE_ANON_KEY = "YOUR-ANON-KEY";
+const RAZORPAY_KEY_ID = "rzp_live_YOUR_KEY_ID";
+const TOOL_ID = "ai-client-acquisition-advisor";
+const PRICE_INR = 149;
+
+let supabase = null;
+try{
+  supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+}catch(e){ console.warn("Supabase init pending config", e); }
+
+/* ============================================================
+   DEVICE ID
+============================================================ */
+function getDeviceId(){
+  let id = localStorage.getItem("incomeaihub_device_id");
+  if(!id){
+    id = "dev_" + Date.now() + "_" + Math.random().toString(36).slice(2,12);
+    localStorage.setItem("incomeaihub_device_id", id);
+  }
+  return id;
+}
+
+/* ============================================================
+   STATE
+============================================================ */
+let currentStep = 1;
+const TOTAL_STEPS = 8;
+const answers = { q1:"", q2:"", q3:[], q4:"", q5:"", q6:"", q7:"", q8:[] };
+let isUnlocked = false;
+let aiResult = null;
+
+/* ============================================================
+   FORM NAVIGATION
+============================================================ */
+function updateProgress(){
+  const pct = Math.round((currentStep/TOTAL_STEPS)*100);
+  document.getElementById("progressFill").style.width = pct + "%";
+  document.getElementById("stepLabel").textContent = `Step ${currentStep} of ${TOTAL_STEPS}`;
+  document.getElementById("stepPercent").textContent = pct + "%";
+  document.getElementById("prevBtn").style.visibility = currentStep===1 ? "hidden":"visible";
+  document.getElementById("nextBtn").textContent = currentStep===TOTAL_STEPS ? "Generate Strategy →" : "Next →";
+}
+
+function showStep(n){
+  document.querySelectorAll(".step").forEach(s=>s.classList.remove("active"));
+  document.querySelector(`.step[data-step="${n}"]`).classList.add("active");
+  updateProgress();
+}
+
+function validateStep(n){
+  if(n===1) return answers.q1.trim().length>0;
+  if(n===2) return answers.q2.length>0;
+  if(n===3) return answers.q3.length>0;
+  if(n===4) return answers.q4.length>0;
+  if(n===5) return answers.q5.toString().trim().length>0;
+  if(n===6) return answers.q6.trim().length>0;
+  if(n===7) return answers.q7.length>0;
+  if(n===8) return answers.q8.length>0;
+  return true;
+}
+
+function nextStep(){
+  if(!validateStep(currentStep)){
+    showToast("Kripya jawab dein / select karein");
+    return;
+  }
+  if(currentStep < TOTAL_STEPS){
+    currentStep++;
+    showStep(currentStep);
+  } else {
+    generateStrategy();
+  }
+}
+function prevStep(){
+  if(currentStep>1){ currentStep--; showStep(currentStep); }
+}
+
+document.getElementById("q1").addEventListener("input", e=> answers.q1 = e.target.value);
+document.getElementById("q5").addEventListener("input", e=> answers.q5 = e.target.value);
+document.getElementById("q6").addEventListener("input", e=> answers.q6 = e.target.value);
+
+function wireSingleSelect(containerId, key){
+  const el = document.getElementById(containerId);
+  el.querySelectorAll(".opt").forEach(opt=>{
+    opt.addEventListener("click", ()=>{
+      el.querySelectorAll(".opt").forEach(o=>{o.classList.remove("selected"); o.querySelector(".check").textContent="";});
+      opt.classList.add("selected");
+      opt.querySelector(".check").textContent="✓";
+      answers[key] = opt.dataset.value;
+    });
+  });
+}
+function wireMultiSelect(containerId, key){
+  const el = document.getElementById(containerId);
+  el.querySelectorAll(".opt").forEach(opt=>{
+    opt.addEventListener("click", ()=>{
+      opt.classList.toggle("selected");
+      const chk = opt.querySelector(".check");
+      const val = opt.dataset.value;
+      if(opt.classList.contains("selected")){
+        chk.textContent="✓";
+        if(!answers[key].includes(val)) answers[key].push(val);
+      } else {
+        chk.textContent="";
+        answers[key] = answers[key].filter(v=>v!==val);
+      }
+    });
+  });
+}
+wireSingleSelect("q2","q2");
+wireMultiSelect("q3","q3");
+wireSingleSelect("q4","q4");
+wireSingleSelect("q7","q7");
+wireMultiSelect("q8","q8");
+
+/* ============================================================
+   AI STRATEGY GENERATION
+============================================================ */
+const loadingMessages = [
+  "Aapki niche analyze ho rahi hai...",
+  "Best channels rank kiye ja rahe hain...",
+  "Outreach templates likhe ja rahe hain...",
+  "30-din ka action plan banaya ja raha hai..."
+];
+
+async function generateStrategy(){
+  document.getElementById("formPanel").style.display="none";
+  document.getElementById("loadingWrap").classList.add("active");
+
+  let msgIdx=0;
+  const msgInterval = setInterval(()=>{
+    msgIdx = (msgIdx+1) % loadingMessages.length;
+    document.getElementById("loadingMsg").textContent = loadingMessages[msgIdx];
+  }, 1400);
+
+  try{
+    const prompt = buildPrompt();
+    const result = await callAI(prompt);
+    aiResult = parseAIResult(result);
+  }catch(err){
+    console.error(err);
+    aiResult = fallbackResult();
+  }
+
+  clearInterval(msgInterval);
+  document.getElementById("loadingWrap").classList.remove("active");
+  renderResults(aiResult);
+  document.getElementById("resultsWrap").classList.add("active");
+  window.scrollTo({top:0, behavior:"smooth"});
+
+  await checkUnlockStatus();
+}
+
+function buildPrompt(){
+  return `Tum ek expert Indian freelance business coach ho jo Hinglish (Hindi-English mix, Roman script) mein baat karte ho.
+User details:
+- Niche/Service: ${answers.q1}
+- Experience: ${answers.q2}
+- Current client sources: ${answers.q3.join(", ")}
+- Target client type: ${answers.q4}
+- Monthly new client goal: ${answers.q5}
+- Current pricing: ${answers.q6}
+- Biggest challenge: ${answers.q7}
+- Preferred channels: ${answers.q8.join(", ")}
+
+Respond ONLY in strict JSON (no markdown, no preamble) with this exact shape:
+{
+  "score": <number 0-100, client acquisition readiness>,
+  "verdict": "<short punchy Hinglish verdict, max 8 words>",
+  "channels": [
+    {"rank":1,"name":"<channel name>","reason":"<2-3 line Hinglish reasoning tailored to user>"},
+    {"rank":2,"name":"...","reason":"..."},
+    {"rank":3,"name":"...","reason":"..."}
+  ],
+  "templates": {
+    "cold_email": {"subject":"<subject line>","body":"<full email body, Hinglish, personalized, under 150 words>"},
+    "linkedin_dm": "<short LinkedIn DM, under 80 words, Hinglish>",
+    "proposal_opener": "<Fiverr/Upwork proposal opening paragraph, under 80 words, Hinglish>"
+  },
+  "plan": [
+    {"week":"Week 1","focus":"<focus area>","actions":"<2-3 concrete Hinglish action items>"},
+    {"week":"Week 2","focus":"...","actions":"..."},
+    {"week":"Week 3","focus":"...","actions":"..."},
+    {"week":"Week 4","focus":"...","actions":"..."}
+  ],
+  "pricing_tip": "<3-4 line Hinglish pricing/positioning advice specific to their situation>"
+}`;
+}
+
+async function callAI(prompt){
+  const { data, error } = await supabase.functions.invoke("ai-proxy", {
+    body: { tool: TOOL_ID, prompt: prompt, device_id: getDeviceId() }
+  });
+  if(error) throw error;
+  return data.result || data.text || data.content;
+}
+
+function parseAIResult(raw){
+  let text = typeof raw === "string" ? raw : JSON.stringify(raw);
+  text = text.replace(/```json|```/g,"").trim();
+  return JSON.parse(text);
+}
+
+function fallbackResult(){
+  return {
+    score: 58,
+    verdict: "Solid base hai, consistency chahiye",
+    channels: [
+      {rank:1,name: answers.q4.includes("CA")?"Local Networking + LinkedIn":"LinkedIn Outreach", reason:"Aapki niche aur target client ke hisaab se yeh sabse fast trust build karta hai."},
+      {rank:2,name:"Cold Email", reason:"Directly decision-makers tak pahunchne ka reliable tareeka."},
+      {rank:3,name:"Fiverr/Upwork", reason:"Consistent inbound leads ke liye achha starting point."}
+    ],
+    templates:{
+      cold_email:{subject:`${answers.q1} services ke baare mein — quick sawaal`, body:`Namaste,\n\nMain ${answers.q1} mein specialize karta/karti hoon aur aapke business ke liye kuch specific ideas share karna chahta/chahti hoon.\n\nKya hum 15-min ki call schedule kar sakte hain?\n\nDhanyavaad`},
+      linkedin_dm:`Hi! Main ${answers.q1} mein kaam karta/karti hoon. Aapki profile dekh kar laga ki hum collaborate kar sakte hain. Open to a quick chat?`,
+      proposal_opener:`Namaste! Maine aapki requirement dhyan se padhi. Main ${answers.q1} mein ${answers.q2} ka experience rakhta/rakhti hoon aur is project ko efficiently deliver kar sakta/sakti hoon.`
+    },
+    plan:[
+      {week:"Week 1",focus:"Positioning tayyar karna",actions:"Portfolio update karein, 5 target clients list banayein"},
+      {week:"Week 2",focus:"Outreach shuru",actions:"Roz 5 personalized messages bhejein"},
+      {week:"Week 3",focus:"Follow-ups",actions:"Non-responders ko follow-up karein, 2 calls schedule karein"},
+      {week:"Week 4",focus:"Close & repeat",actions:"Deals close karein, process ko refine karein"}
+    ],
+    pricing_tip:`Apna current rate (${answers.q6}) market se compare karein. Beginners thoda kam charge kar sakte hain trust build karne ke liye, lekin har 3 clients ke baad rate 10-15% badhayein.`
+  };
+}
+
+/* ============================================================
+   RENDER RESULTS
+============================================================ */
+function renderResults(r){
+  animateGauge(r.score);
+  document.getElementById("gaugeVerdict").textContent = r.verdict || "";
+
+  const freeChannel = r.channels[0];
+  document.getElementById("channelsFree").innerHTML = channelCardHTML(freeChannel);
+
+  const restChannels = r.channels.slice(1).map(channelCardHTML).join("");
+  document.getElementById("channelsBlurContent").innerHTML = restChannels;
+
+  const tHtml = templateCardHTML("📧 Cold Email", `Subject: ${r.templates.cold_email.subject}\n\n${r.templates.cold_email.body}`)
+    + templateCardHTML("💼 LinkedIn DM", r.templates.linkedin_dm)
+    + templateCardHTML("📝 Proposal Opener", r.templates.proposal_opener);
+  document.getElementById("templatesBlurContent").innerHTML = tHtml;
+  document.getElementById("templatesFull").innerHTML = tHtml;
+
+  const pHtml = r.plan.map(w=>`<div class="plan-week"><h4>${w.week} — ${w.focus}</h4><p>${w.actions}</p></div>`).join("");
+  document.getElementById("planBlurContent").innerHTML = pHtml;
+  document.getElementById("planFull").innerHTML = pHtml;
+
+  document.getElementById("pricingTip").innerHTML = `<p>${r.pricing_tip}</p>`;
+}
+
+function channelCardHTML(c){
+  return `<div class="channel-card"><div class="channel-rank">#${c.rank}</div><div class="channel-body"><h4>${c.name}</h4><p>${c.reason}</p></div></div>`;
+}
+function templateCardHTML(title, body){
+  const safe = body.replace(/`/g,"'");
+  return `<div class="template-card"><button class="copy-btn" onclick="copyText(this)" data-text="${encodeURIComponent(safe)}">Copy</button><h4>${title}</h4><div class="template-body">${body}</div></div>`;
+}
+function copyText(btn){
+  const text = decodeURIComponent(btn.dataset.text);
+  navigator.clipboard.writeText(text).then(()=>{
+    btn.textContent="Copied!";
+    setTimeout(()=>btn.textContent="Copy", 1500);
+  });
+}
+
+function animateGauge(score){
+  const circumference = 251.2;
+  const offset = circumference - (circumference * Math.min(Math.max(score,0),100) / 100);
+  const arc = document.getElementById("gaugeArc");
+  const text = document.getElementById("gaugeScoreText");
+  let current = 0;
+  arc.style.transition = "stroke-dashoffset 1.2s ease";
+  setTimeout(()=>{ arc.style.strokeDashoffset = offset; }, 100);
+  const step = ()=>{
+    current += Math.max(1, Math.round(score/40));
+    if(current >= score){ current = score; }
+    text.textContent = current;
+    if(current < score) requestAnimationFrame(step);
+  };
+  requestAnimationFrame(step);
+}
+
+/* ============================================================
+   UNLOCK / PAYMENT FLOW
+============================================================ */
+async function checkUnlockStatus(){
+  try{
+    const { data, error } = await supabase.functions.invoke("check-unlock", {
+      body: { tool: TOOL_ID, device_id: getDeviceId() }
+    });
+    if(error) throw error;
+    if(data && data.unlocked){
+      unlockContent();
+    }
+  }catch(e){
+    console.warn("Unlock check failed", e);
+  }
+}
+
+function unlockContent(){
+  isUnlocked = true;
+  document.getElementById("unlockBadge").classList.add("show");
+  document.getElementById("channelsLocked").querySelector(".lock-overlay").style.display="none";
+  document.getElementById("channelsLocked").querySelector(".blurred").classList.remove("blurred");
+  document.getElementById("templatesLocked").style.display="none";
+  document.getElementById("planLocked").style.display="none";
+  document.getElementById("fullContent").style.display="block";
+  document.getElementById("paywallBox").style.display="none";
+}
+
+async function startPayment(){
+  const payBtn = document.getElementById("payBtn");
+  payBtn.disabled = true;
+  payBtn.textContent = "Processing...";
+  try{
+    const { data: orderData, error: orderErr } = await supabase.functions.invoke("create-order", {
+      body: { tool: TOOL_ID, amount: PRICE_INR * 100, device_id: getDeviceId() }
+    });
+    if(orderErr) throw orderErr;
+
+    const options = {
+      key: RAZORPAY_KEY_ID,
+      amount: PRICE_INR * 100,
+      currency: "INR",
+      name: "IncomeAIHub",
+      description: "AI Client Acquisition Advisor — Lifetime Unlock",
+      order_id: orderData.order_id,
+      handler: async function(response){
+        try{
+          const { data: verifyData, error: verifyErr } = await supabase.functions.invoke("verify-payment", {
+            body: {
+              tool: TOOL_ID,
+              device_id: getDeviceId(),
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_signature: response.razorpay_signature
+            }
+          });
+          if(verifyErr) throw verifyErr;
+          if(verifyData && verifyData.success){
+            unlockContent();
+            showToast("Payment successful! Full strategy unlock ho gayi 🎉");
+          } else {
+            showToast("Verification fail hui, support se contact karein");
+          }
+        }catch(e){
+          console.error(e);
+          showToast("Verification error, dobara try karein");
+        }
+      },
+      theme: { color: "#D4AF37" },
+      modal: { ondismiss: function(){ payBtn.disabled=false; payBtn.textContent="🔓 Unlock Full Strategy — ₹149"; } }
+    };
+    const rzp = new Razorpay(options);
+    rzp.open();
+  }catch(e){
+    console.error(e);
+    showToast("Payment start nahi ho paya, dobara try karein");
+    payBtn.disabled = false;
+    payBtn.textContent = "🔓 Unlock Full Strategy — ₹149";
+  }
+}
+
+/* ============================================================
+   MISC UI
+============================================================ */
+function showToast(msg){
+  const t = document.getElementById("toast");
+  t.textContent = msg;
+  t.classList.add("show");
+  setTimeout(()=>t.classList.remove("show"), 2600);
+}
+function openGuide(){ document.getElementById("guideModal").classList.add("active"); }
+function closeGuide(){ document.getElementById("guideModal").classList.remove("active"); }
+document.getElementById("guideModal").addEventListener("click", e=>{
+  if(e.target.id==="guideModal") closeGuide();
+});
+
+function restartTool(){
+  currentStep = 1;
+  answers.q1=""; answers.q2=""; answers.q3=[]; answers.q4=""; answers.q5=""; answers.q6=""; answers.q7=""; answers.q8=[];
+  document.querySelectorAll(".opt").forEach(o=>{o.classList.remove("selected"); o.querySelector(".check").textContent="";});
+  document.getElementById("q1").value=""; document.getElementById("q5").value=""; document.getElementById("q6").value="";
+  document.getElementById("resultsWrap").classList.remove("active");
+  document.getElementById("formPanel").style.display="block";
+  showStep(1);
+  window.scrollTo({top:0, behavior:"smooth"});
+}
+
+/* init */
+updateProgress();
+checkUnlockStatus();
+</script>
+</body>
+</html>
